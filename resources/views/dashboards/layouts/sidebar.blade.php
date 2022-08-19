@@ -5,7 +5,11 @@
             <img src="{{asset('admin-asset/dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-            <a href="#" class="d-block">Alexander Pierce</a>
+            <a href="#" class="d-block">{{auth()->user()->name}}</a>
+            <form action="{{ route('logout')}}" method="post">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
+                </form>
         </div>
     </div>
 
@@ -27,7 +31,7 @@
             <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
             <li class="nav-item menu-open">
-                <a href="#" class="nav-link active">
+                <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>
                         Categories
@@ -36,7 +40,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{route('dashboard.categories.index')}}" class="nav-link active">
+                        <a href="{{route('dashboard.categories.index')}}" class="nav-link">
                             <i class="far fa-circle nav-icon"></i>
                             <p>All Category</p>
                         </a>

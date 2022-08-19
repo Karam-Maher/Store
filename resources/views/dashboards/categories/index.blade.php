@@ -14,11 +14,6 @@
     {{session('success')}}
 </div>
 @endif
-@if (session()->has('info'))
-<div class="alert alert-info">
-    {{session('info')}}
-</div>
-@endif
 @if (session()->has('danger'))
 <div class="alert alert-danger">
     {{session('danger')}}

@@ -42,6 +42,10 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate(Category::rules(),[
+            'required' => 'This field (:attribute) is required',
+            'name' => 'This is name already exists!'
+        ]);
         $request->merge([
             'slug' => Str::slug($request->name)
         ]);
@@ -87,15 +91,18 @@ class CategoriesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $request->validate(Category::rules($id));
         $category = Category::findOrFail($id);
         $old_image = $category->image;
         $data = $request->except('image');
+        $new_image = $this->uploadImage($request);
 
-        $data['image'] = $this->uploadImage($request);
-
+        if($new_image){
+            $data['image'] = $new_image;
+        }
         $category->update($data);
 
-        if ($old_image && $data['image']) {
+        if ($old_image && $new_image ) {
             Storage::disk('public')->delete($old_image);
         }
 
@@ -121,6 +128,7 @@ class CategoriesController extends Controller
         return redirect()->route('dashboard.categories.index')
             ->with('danger', 'Category Deleted!');
     }
+
     protected function uploadImage(Request $request)
     {
         if (!$request->hasFile('image')) {
