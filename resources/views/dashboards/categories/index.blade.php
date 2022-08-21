@@ -9,16 +9,10 @@
 @endsection
 
 @section('content')
-@if (session()->has('success'))
-<div class="alert alert-success">
-    {{session('success')}}
-</div>
-@endif
-@if (session()->has('danger'))
-<div class="alert alert-danger">
-    {{session('danger')}}
-</div>
-@endif
+
+<x-alert type="success" />
+<x-alert type="danger" />
+
 <table class="table">
     <th>
         <thead>

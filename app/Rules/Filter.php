@@ -28,7 +28,7 @@ class Filter implements Rule
      */
     public function passes($attribute, $value)
     {
-        return !in_array(strtolower($value), $this->forbidden);
+        return ! in_array(strtolower($value), $this->forbidden);
     }
 
     /**

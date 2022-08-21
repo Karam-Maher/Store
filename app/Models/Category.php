@@ -25,7 +25,7 @@ class Category extends Model
                 //         $fails('This name is forbidden!');
                 //     }
                 // },
-                new Filter('laravel'),
+                new Filter(['laravel','php','java']),
             ],
             'image' => 'image|max:1048576',
             'status' => 'in:active,inactive'
