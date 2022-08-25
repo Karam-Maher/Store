@@ -18,7 +18,14 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        $categories = Category::all(); //return collection class
+        $request = request();
+        //   $query = Category::query();
+
+        //$categories = $query->paginate(5); //return collection class
+        //$categories = Category::active()->paginate();
+
+        $categories = Category::filter($request->query())
+            ->latest()->paginate(5);
 
         return view('dashboards.categories.index', compact('categories'));
     }
@@ -42,13 +49,15 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate(Category::rules(),[
+        $request->validate(Category::rules(), [
             'required' => 'This field (:attribute) is required',
             'name' => 'This is name already exists!'
         ]);
+
         $request->merge([
             'slug' => Str::slug($request->name)
         ]);
+
         $data = $request->except('image');
         $data['image'] = $this->uploadImage($request);
 
@@ -97,12 +106,12 @@ class CategoriesController extends Controller
         $data = $request->except('image');
         $new_image = $this->uploadImage($request);
 
-        if($new_image){
+        if ($new_image) {
             $data['image'] = $new_image;
         }
         $category->update($data);
 
-        if ($old_image && $new_image ) {
+        if ($old_image && $new_image) {
             Storage::disk('public')->delete($old_image);
         }
 
@@ -121,13 +130,15 @@ class CategoriesController extends Controller
         $category = Category::findOrFail($id);
         $category->delete();
 
-        if ($category->image) {
-            Storage::disk('public')->delete($category->image);
-        }
+        // if ($category->image) {
+        //     Storage::disk('public')->delete($category->image);
+        // }
 
         return redirect()->route('dashboard.categories.index')
             ->with('danger', 'Category Deleted!');
     }
+
+
 
     protected function uploadImage(Request $request)
     {
@@ -140,5 +151,30 @@ class CategoriesController extends Controller
         ]);
 
         return $path;
+    }
+
+    public function trash()
+    {
+        $categories = Category::onlyTrashed()->latest()->paginate(5);
+        return view('dashboards.categories.trash', compact('categories'));
+    }
+
+    public function restore(Request $request, $id)
+    {
+        $categories = Category::onlyTrashed()->findOrFail($id);
+        $categories->restore();
+        return redirect()->route('dashboard.categories.trash')
+            ->with('succes', 'Category restored!');
+    }
+
+    public function forceDelete($id)
+    {
+        $category = Category::onlyTrashed()->findOrFail($id);
+        $category->forceDelete();
+        if ($category->image) {
+            Storage::disk('public')->delete($category->image);
+        }
+        return redirect()->route('dashboard.categories.trash')
+            ->with('danger', 'Category Deleted!');
     }
 }
